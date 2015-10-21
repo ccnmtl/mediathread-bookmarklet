@@ -4,7 +4,7 @@
   "description": "A bookmarklet for importing assets to Mediathread",
   "main": "bookmarklet.js",
   "scripts": {
-    "pretest": "jshint *.js",
+    "pretest": "jshint *.js tests/*.js",
     "test": "mocha tests"
   },
   "repository": {
