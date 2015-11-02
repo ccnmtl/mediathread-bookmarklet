@@ -1,0 +1,4 @@
+2015-11-02  Nik Nyby  <nnyby@columbia.edu>
+
+	* Don't alter the aspect ratio of the image in the asset
+	finder.
