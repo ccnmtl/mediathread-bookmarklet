@@ -4,6 +4,9 @@ test: node_modules
 jshint: node_modules/jshint/bin/jshint
 	./node_modules/jshint/bin/jshint *.js tests/*.js
 
+build:
+	npm pack
+
 node_modules:
 	npm install
 
