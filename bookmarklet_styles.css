@@ -6,6 +6,10 @@
     left: 0;
     background: url(/media/js/mediathread-bookmarklet/overlaybg.png) repeat;
 }
+.sherd-analyzer button,
+.sherd-analyzer input[type="button"] {
+    cursor: pointer;
+}
 .sherd-window-inner h2{
     color: #fff;
     font-size: 14px;
@@ -44,6 +48,7 @@
 .sherd-asset-wrap{
     min-height: 55px;
     min-width: 215px;
+    text-align: center;
 /*
     setting the min height and width will make sure that videos are
     picked up and shown when they do not have thubmnails on their
@@ -68,10 +73,10 @@
 .sherd-form-title, .sherd-analyze-btn{
     display: none;
 }
-img.sherd-image{
-    width:100% !important;
-    max-width:215px;
-    max-height:300px;
+
+img.sherd-image {
+    max-width: 215px;
+    max-height: 300px;
     border-radius: 4px;
 }
 
@@ -107,6 +112,7 @@ input.analyze.btn-primary, input.cont.btn-primary{
     border-right: none;
     border-top: none;
     border-radius: 0;
+    border-radius: 4px 4px 0 0;
     box-shadow: none;
     width: 100%;
     clear: both;
@@ -127,26 +133,20 @@ input.analyze.btn-primary, input.cont.btn-primary{
     clear: both;
     font-family: 'Helvetica Neue', Helvetica, Arial;
     font-weight: 200;
-
-
 }
 
 .cont.btn-primary:hover {
     box-shadow: none;
-    border-radius: 0;
 }
-
 
 .analyze.btn-primary:hover {
     box-shadow: 3px 1px 1px #ccc;
-    border-radius: 0 0 4px 4px;
 }
 
 input.cont {
     position: relative;
     margin: 0;
     float: left;
-    top: -35px;
 }
 
 input.analyze {
@@ -154,7 +154,6 @@ input.analyze {
     margin: 0;
     float: left;
     width: 135px;
-    top: -35px;
 }
 
 
