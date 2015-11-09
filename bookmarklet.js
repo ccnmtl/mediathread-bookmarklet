@@ -2661,7 +2661,6 @@ SherdBookmarklet = {
         this.displayAsset = function(asset,index) {
             var assetUrl = asset.sources[asset.primary_type];
             if(assetUrl !== undefined){
-                // make sure to strip out any url params
                 asset.sources[asset.primary_type] = assetUrl;
             }
             if (!asset) return;
