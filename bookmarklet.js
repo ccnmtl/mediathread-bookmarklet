@@ -2662,7 +2662,7 @@ SherdBookmarklet = {
             var assetUrl = asset.sources[asset.primary_type];
             if(assetUrl !== undefined){
                 // make sure to strip out any url params
-                asset.sources[asset.primary_type] = assetUrl.split('?')[0];
+                asset.sources[asset.primary_type] = assetUrl;
             }
             if (!asset) return;
             var doc = comp.ul.ownerDocument;
