@@ -2667,7 +2667,13 @@ SherdBookmarklet = {
         };
         this.displayAsset = function(asset,index) {
             var assetUrl = asset.sources[asset.primary_type];
-            if(assetUrl !== undefined){
+            if (typeof assetUrl !== 'undefined') {
+                if (typeof URL === 'function') {
+                    var u = new URL(assetUrl);
+                    // asia.si.edu sets max_w to set a thumbnailed size.
+                    u.search = u.search.replace(/(&|\?)?max_(w|h)=\d+/, '');
+                    assetUrl = u.href;
+                }
                 asset.sources[asset.primary_type] = assetUrl;
             }
             if (!asset) return;
