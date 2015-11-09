@@ -2411,6 +2411,13 @@ SherdBookmarklet = {
                 }
             }
             ++self.handler_count;
+
+            // Whenever an asset is found, even if it's async, remove
+            // the "no assets found" error.
+            if (self.assets_found.length > 0) {
+                jQ('.no-asset-alert').remove();
+            }
+
             if (self.handler_count >= self.final_count) {
                 self.ASYNC.finish({'found':!self.no_assets_yet});
             }
