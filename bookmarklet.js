@@ -2797,13 +2797,13 @@ SherdBookmarklet = {
 
                     title.focus();
                     title.css({
-                        color:'#999',
-                        width:'350px',
-                        height:'35px',
-                        fontSize:'14px',
-                        margin:'10px 0',
-                        '-moz-appearance':'none',
-                        '-webkit-appearance':'none'
+                        color: '#000',
+                        width: '350px',
+                        height: '35px',
+                        fontSize: '14px',
+                        margin: '10px 0',
+                        '-moz-appearance': 'none',
+                        '-webkit-appearance': 'none'
                     });
                     submitBtn.css({
                         'font-size':'14px',
