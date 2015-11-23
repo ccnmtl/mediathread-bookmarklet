@@ -281,14 +281,14 @@ SherdBookmarklet = {
                     var found_images = [];
                     var floating_pane = jQuery(".MetaDataWidgetRoot");
                     var selected_thumbs = jQuery(".thumbNailImageSelected");
-                    if (floating_pane.length) {
+                    if (floating_pane.length > 0) {
                         var dom = floating_pane.get(0);
                         found_images.push({
                             "artstorId":dom.id.substr(3),/*after 'mdw'*/
                             "sources":{},"metadata":{},"primary_type":'image_fpx',
                             "html":dom
                         });
-                    } else if (selected_thumbs.length) {
+                    } else if (selected_thumbs.length > 0) {
                         selected_thumbs.each(function() {
                             found_images.push({
                                 "artstorId":dijit.byId(String(this.id).split('_')[0]).objectId,
@@ -385,8 +385,39 @@ SherdBookmarklet = {
                             {
                                 obj.sources["image-metadata"] = dims;
                                 callback([obj]);
-                            },function error(){
-                                callback([]);//perhaps overly extreme?
+                            }, function error() {
+                                // Error, maybe the url isn't a straight image
+                                // file? In that case, load the URL as a document
+                                // and get the enlarged image.
+                                // e.g.
+                                //
+                                // http://www.blakearchive.org/exist/blake/archive/object.xq?objectid=milton.a.illbk.33
+                                //  ->
+                                // http://www.blakearchive.org/exist/blake/archive/enlargement.xq?objectdbi=milton.a.p33
+                                $.get(obj.sources.image)
+                                    .done(function(doc) {
+                                        var $img = $(doc).find('#enlargedImage');
+                                        var src = $img.attr('src');
+                                        if (!src.match(/^http/)) {
+                                            // make the src absolute
+                                            src = 'http://' +
+                                                document.location.hostname + src;
+                                        }
+                                        obj.sources.image = src;
+                                        SB.getImageDimensions(
+                                            src,
+                                            function onload(img, dims) {
+                                                obj.sources['image-metadata'] =
+                                                    dims;
+                                                callback([obj]);
+                                            },
+                                            function(error) {
+                                                callback([]);
+                                            });
+                                    })
+                                    .fail(function() {
+                                        callback([]);
+                                    });
                             });
                     }
                 });
@@ -506,7 +537,7 @@ SherdBookmarklet = {
                                                "title": getInfoData.photo.title._content,
                                                "thumb": thumb_url,
                                                "image": img_url,
-                                               "metadata-photostream": "http://www.flickr.com/photos/" + getInfoData.photo.owner.nsid, /* owner's photostream */
+                                               "metadata-photostream": "https://www.flickr.com/photos/" + getInfoData.photo.owner.nsid, /* owner's photostream */
                                                "image-metadata":"w"+w+"h"+h,
                                                "metadata-owner":getInfoData.photo.owner.realname ||undefined
                                            };
@@ -642,68 +673,6 @@ SherdBookmarklet = {
                     }); //end each
                 });
                 return callback( returnArray );
-            }
-        },
-        "vital.ccnmtl.columbia.edu": {
-            allow_save_all:true,
-            find:function(callback) {
-                if (! /materialsLib/.test(document.location.pathname)) {
-                    callback([],'Go to the Course Library page and run the bookmarklet again');
-                }
-                SherdBookmarklet.run_with_jquery(function(jQuery) {
-                    var found_videos = [];
-                    var course_library = jQuery('a.thumbnail');
-                    var done = course_library.length;
-                    var obj_final = function() {
-                        return callback(found_videos);
-                    };
-                    course_library.each(function() {
-                        var asset = {
-                            "html":this,
-                            "vitalId":String(this.href).match(/\&id=(\d+)/)[1],
-                            "sources":{'quicktime-metadata':"w320h240"},
-                            "metadata":{},"primary_type":"quicktime"
-                        };
-                        jQuery.ajax({
-                            url:'basicAdmin.smvc?action=display&entity=material&id='+asset.vitalId,
-                            dataType:'text',
-                            success:function(edit_html) {
-                                var split_html = edit_html.split('Video Categories:');
-                                ///Basic URLs and Title
-                                split_html[0].replace(
-                                    new RegExp('<input[^>]+name="(\\w+)" value="([^"]+)"','mg'),
-                                    function(full,name,val) {
-                                        switch(name) {
-                                        case "title": asset.sources.title = val;break;
-                                        case "url": asset.sources.quicktime = val;break;
-                                        case "thumbUrl": asset.sources.thumb = val;break;
-                                        }
-                                    });
-                                ///don't procede if we didn't get the quicktime url
-                                if (asset.sources.quicktime) {
-                                    ///TODO: VITAL Metadata
-                                    //Topics = assignments
-                                    ///Extra Metadata
-                                    if (split_html.length > 1 ) {
-                                        split_html[1].replace(
-                                            new RegExp('<b>([^<]+):</b>[\\s\\S]*?value="([^"]+)"[\\s\\S]*?value="([^"]+)"','mg'),
-                                            function(full,name,value_id,val) {
-                                                asset.metadata[name] = [val];
-                                            });
-                                    }
-                                    ///PUSH
-                                    found_videos.push(asset);
-                                }
-                                if (--done===0) obj_final();
-                            },
-                            error:function() {
-                                if (--done===0) obj_final();
-                            }
-                        });
-
-
-                    });
-                });
             }
         },
         "learn.columbia.edu": {
@@ -1286,8 +1255,8 @@ SherdBookmarklet = {
                             primary_type:"vimeo",
                             label:"vimeo video",
                             sources: {
-                                "url": "http://www.vimeo.com/" + vimeoId,
-                                "vimeo":"http://www.vimeo.com/" + vimeoId
+                                "url": "https://www.vimeo.com/" + vimeoId,
+                                "vimeo":"https://www.vimeo.com/" + vimeoId
                             }};
 
                         if (objemb.api_getCurrentTime) {
@@ -2036,9 +2005,9 @@ SherdBookmarklet = {
     },
     "getImageDimensions":function(src,callback,onerror) {
         //
-        var img = document.createElement("img");
+        var img = document.createElement('img');
         img.onload = function() {
-            callback(img,"w"+img.width+"h"+img.height);
+            callback(img, 'w' + img.width + 'h' + img.height);
         };
         img.onerror = onerror;
         img.src = src;

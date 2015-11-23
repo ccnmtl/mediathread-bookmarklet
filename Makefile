@@ -15,3 +15,4 @@ node_modules/jshint/bin/jshint:
 
 clean:
 	rm -rf node_modules
+	rm -f mediathread-bookmarklet-*.tgz
